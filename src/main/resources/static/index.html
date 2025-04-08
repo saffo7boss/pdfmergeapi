@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PDF Merger</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      background: #f4f4f4;
+      text-align: center;
+    }
+    h1 {
+      color: #333;
+    }
+    input[type="file"] {
+      margin: 20px 0;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>Merge Your PDFs</h1>
+  <form id="mergeForm">
+    <input type="file" id="pdfs" name="files" accept="application/pdf" multiple required>
+    <br>
+    <button type="submit">Merge PDFs</button>
+  </form>
+
+  <script>
+    document.getElementById("mergeForm").addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      const input = document.getElementById("pdfs");
+      const files = input.files;
+
+      if (files.length < 2) {
+        alert("Please select at least two PDF files.");
+        return;
+      }
+
+      const formData = new FormData();
+      for (let i = 0; i < files.length; i++) {
+        formData.append("files", files[i]);
+      }
+
+      try {
+        const response = await fetch("/merge", {
+          method: "POST",
+          body: formData
+        });
+
+        if (!response.ok) throw new Error("Merge failed");
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "merged.pdf";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (err) {
+        alert("Something went wrong: " + err.message);
+      }
+    });
+  </script>
+</body>
+</html>
