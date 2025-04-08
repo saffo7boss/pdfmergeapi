@@ -1,80 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>PDF Merger</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 40px;
-      background: #f4f4f4;
-      text-align: center;
-    }
-    h1 {
-      color: #333;
-    }
-    input[type="file"] {
-      margin: 20px 0;
-    }
-    button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Merge Web Service</title>
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Merge Your PDFs</h1>
-  <form id="mergeForm">
-    <input type="file" id="pdfs" name="files" accept="application/pdf" multiple required>
-    <br>
-    <button type="submit">Merge PDFs</button>
-  </form>
+<div class="container">
+    <h1>PDF Merge Web Service</h1>
+    <div class="file-upload-container">
+        <label for="pdf-files">Select PDFs to merge:</label>
+        <input type="file" id="pdf-files" accept="application/pdf" multiple style="display: none;">
+        <button onclick="triggerFileInput()">Upload PDFs</button>
+    </div>
 
-  <script>
-    document.getElementById("mergeForm").addEventListener("submit", async function (event) {
-      event.preventDefault();
+    <div id="file-list" class="file-list">
+        <!-- Uploaded files will appear here -->
+    </div>
 
-      const input = document.getElementById("pdfs");
-      const files = input.files;
+    <div class="action-buttons">
+        <button onclick="mergePDFs()">Merge PDFs</button>
+    </div>
 
-      if (files.length < 2) {
-        alert("Please select at least two PDF files.");
-        return;
-      }
+    <div class="progress-bar">
+        <div id="progress" class="progress"></div>
+    </div>
 
-      const formData = new FormData();
-      for (let i = 0; i < files.length; i++) {
-        formData.append("files", files[i]);
-      }
+    <div id="response-message" class="response-message"></div>
+</div>
 
-      try {
-        const response = await fetch("/merge", {
-          method: "POST",
-          body: formData
-        });
-
-        if (!response.ok) throw new Error("Merge failed");
-
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "merged.pdf";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } catch (err) {
-        alert("Something went wrong: " + err.message);
-      }
-    });
-  </script>
+<script src="script.js"></script>
 </body>
 </html>
